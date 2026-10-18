@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:text="@string/music_widget_name" />
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="16dp"
+    android:background="#202124">
+
+    <TextView
+        android:id="@+id/music_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/music_default_title"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
+    <ImageButton
+        android:id="@+id/music_play_pause"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="4dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_music_play"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/music_play"/>
+
+</LinearLayout>

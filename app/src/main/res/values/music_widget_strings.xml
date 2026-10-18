@@ -1,3 +1,6 @@
 <resources>
     <string name="music_widget_name">Music Player</string>
+    <string name="music_default_title">Chưa phát nhạc</string>
+    <string name="music_play">Đang phát nhạc</string>
+    <string name="music_pause">Tạm dừng</string>
 </resources>
