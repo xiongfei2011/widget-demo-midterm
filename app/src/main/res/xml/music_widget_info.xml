@@ -6,4 +6,5 @@
     android:resizeMode="horizontal"
     android:updatePeriodMillis="0"
     android:widgetCategory="home_screen"
+    android:previewImage="@drawable/music_widget_preview"
     />
