@@ -1,3 +1,10 @@
 <resources>
     <string name="music_widget_name">Music Player</string>
+    <string name="music_default_title">Chưa phát nhạc</string>
+    <string name="music_no_song">Chưa chọn bài</string>
+    <string name="music_play">Đang phát nhạc</string>
+    <string name="music_pause">Tạm dừng</string>
+    <string name="music_name_artist">Ca sĩ</string>
+    <string name="music_previous">Bài trước</string>
+    <string name="music_next">Bài sau</string>
 </resources>
