@@ -17,6 +17,9 @@ import com.example.widgetdemo.R;
 public class MusicWidgetProvider extends AppWidgetProvider {
     private static boolean showPause = false;
     private static String currTitle = "Chưa phát nhạc";
+    private static String currArtist = "Ca sĩ";
+    private static boolean hasStartedPlayback = false;
+    private static int currentCoverResource = 0;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -30,33 +33,93 @@ public class MusicWidgetProvider extends AppWidgetProvider {
     private static RemoteViews createViews(Context context){
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.music_widget);
 
-        views.setTextViewText(R.id.music_title, currTitle);
+        if (hasStartedPlayback && currentCoverResource != 0) {
+            views.setImageViewResource(
+                    R.id.music_cover,
+                    currentCoverResource
+            );
 
-        int icon = showPause ? R.drawable.ic_music_pause : R.drawable.ic_music_play;
+            views.setViewPadding(
+                    R.id.music_cover,
+                    0, 0, 0, 0
+            );
+        } else {
+            views.setImageViewResource(
+                    R.id.music_cover,
+                    R.drawable.ic_music_note
+            );
+
+            int padding = Math.round(
+                    8 * context.getResources().getDisplayMetrics().density
+            );
+
+            views.setViewPadding(
+                    R.id.music_cover,
+                    padding, padding, padding, padding
+            );
+        }
+
+        views.setTextViewText(R.id.music_title, currTitle);
+        views.setTextViewText(R.id.music_artist, currArtist);
+
+        int icon = showPause ? R.drawable.ic_pause_test : R.drawable.ic_play_test;
 
         int description = showPause ? R.string.music_pause: R.string.music_play;
 
         views.setImageViewResource(R.id.music_play_pause, icon);
         views.setContentDescription(R.id.music_play_pause, context.getString(description));
 
-        Intent intent = new Intent(context, MusicPlaybackService.class);
-        intent.setAction(MusicPlaybackService.ACTION_TOGGLE);
-
-        PendingIntent pendingIntent =
-                PendingIntent.getForegroundService(
+        views.setOnClickPendingIntent(
+                R.id.music_play_pause,
+                createServiceAction(
                         context,
-                        0,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-                );
-        views.setOnClickPendingIntent(R.id.music_play_pause, pendingIntent);
+                        MusicPlaybackService.ACTION_TOGGLE,
+                        0
+                )
+        );
 
+        views.setOnClickPendingIntent(
+                R.id.music_previous,
+                createServiceAction(
+                        context,
+                        MusicPlaybackService.ACTION_PREVIOUS,
+                        1
+                )
+        );
+
+        views.setOnClickPendingIntent(
+                R.id.music_next,
+                createServiceAction(
+                        context,
+                        MusicPlaybackService.ACTION_NEXT,
+                        2
+                )
+        );
         return views;
     }
 
-    public static void updateAllWidget(Context context, String title, boolean shouldShowPause){
+    private static PendingIntent createServiceAction(Context context, String action, int requestCode){
+        Intent intent = new Intent(context, MusicPlaybackService.class);
+        intent.setAction(action);
+
+        return PendingIntent.getForegroundService(
+                context,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+    }
+    public static void updateAllWidget(Context context, String artist, String title, boolean shouldShowPause, int coverResource){
         currTitle = title;
+        currArtist = artist;
         showPause = shouldShowPause;
+        currentCoverResource = coverResource;
+
+        if (coverResource == 0) {
+            hasStartedPlayback = false;
+        } else if (shouldShowPause) {
+            hasStartedPlayback = true;
+        }
 
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
 
