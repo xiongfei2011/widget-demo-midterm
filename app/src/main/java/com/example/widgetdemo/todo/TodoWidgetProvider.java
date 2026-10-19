@@ -40,7 +40,7 @@ public class TodoWidgetProvider extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
 
-        if(!ACTION_TASK_ACTION.equals(intent.getAction())) return;
+        if (!ACTION_TASK_ACTION.equals(intent.getAction())) return;
 
         String taskID = intent.getStringExtra(EXTRA_TASK_ID);
         String operation = intent.getStringExtra(EXTRA_OPERATION);
@@ -48,12 +48,12 @@ public class TodoWidgetProvider extends AppWidgetProvider {
         if (taskID == null) return;
 
         try {
-            if (OP_DELETE.equals(operation)){
+            if (OP_DELETE.equals(operation)) {
                 TodoStorage.deleteItem(context, taskID);
             } else if (OP_TOGGLE.equals(operation)) {
                 TodoItem item = TodoStorage.findItem(context, taskID);
 
-                if (item != null){
+                if (item != null) {
                     TodoStorage.updateItem(
                             context,
                             item.getId(),
@@ -61,12 +61,12 @@ public class TodoWidgetProvider extends AppWidgetProvider {
                             !item.isCompleted()
                     );
                 }
-                
-            }else {
+
+            } else {
                 return;
             }
             updateAllWidgets(context);
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             Toast.makeText(
                     context,
                     R.string.todo_error_storage,
@@ -75,7 +75,7 @@ public class TodoWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private static RemoteViews createViews(Context context){
+    private static RemoteViews createViews(Context context) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.todo_widget);
 
         bindAddButton(context, views);
@@ -85,7 +85,7 @@ public class TodoWidgetProvider extends AppWidgetProvider {
 
         try {
             items = TodoStorage.loadItem(context);
-        } catch (IllegalStateException e ) {
+        } catch (IllegalStateException e) {
             Toast.makeText(context, "Cannot load tasks", Toast.LENGTH_SHORT).show();
 
             items = Collections.emptyList();
@@ -100,7 +100,7 @@ public class TodoWidgetProvider extends AppWidgetProvider {
         return views;
     }
 
-    private static void bindAddButton(Context context, RemoteViews views){
+    private static void bindAddButton(Context context, RemoteViews views) {
         Intent intent = new Intent(context, TodoAddActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -114,7 +114,7 @@ public class TodoWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.btn_add_task, pendingIntent);
     }
 
-    private static void bindTaskList(Context context, RemoteViews views, List<TodoItem> items){
+    private static void bindTaskList(Context context, RemoteViews views, List<TodoItem> items) {
 
         Intent actionIntent = new Intent(context, TodoWidgetProvider.class);
         actionIntent.setAction(ACTION_TASK_ACTION);
@@ -134,44 +134,50 @@ public class TodoWidgetProvider extends AppWidgetProvider {
 
         RemoteViews.RemoteCollectionItems.Builder collection =
                 new RemoteViews.RemoteCollectionItems.Builder()
-                        .setViewTypeCount(1)
-                        .setHasStableIds(false);
+                        .setViewTypeCount(1) // Khai báo số lượng layout khác nhau được sử dụng
+                        .setHasStableIds(false); // Xem Id có cố định hay không
 
-        for (int i = 0; i < items.size(); i++){
+        for (int i = 0; i < items.size(); i++) {
             TodoItem item = items.get(i);
 
-            RemoteViews row = new RemoteViews(context.getPackageName(), R.layout.todo_task_item);
+            RemoteViews row = createTaskRow(context, item);
 
-            row.setTextViewText(R.id.tv_task_title, item.getTitle());
-
-            boolean completed = item.isCompleted();
-
-            row.setInt(R.id.img_task_check,
-                    "setBackgroundResource",
-                    completed ? R.drawable.todo_checked_bg : R.drawable.todo_unchecked_bg
-                    );
-
-            row.setImageViewResource(R.id.img_task_check,
-                    completed ? R.drawable.ic_todo_check : 0);
-
-            // Xử lý nút checked
-            Intent toggleIntent = new Intent();
-            toggleIntent.putExtra(EXTRA_TASK_ID, item.getId());
-            toggleIntent.putExtra(EXTRA_OPERATION, OP_TOGGLE);
-
-            row.setOnClickFillInIntent(R.id.btn_toggle_task, toggleIntent);
-
-            // Xử lý xóa task
-            Intent deleteIntent = new Intent();
-            deleteIntent.putExtra(EXTRA_TASK_ID, item.getId());
-            deleteIntent.putExtra(EXTRA_OPERATION, OP_DELETE);
-
-            row.setOnClickFillInIntent(R.id.btn_delete_task, deleteIntent);
-
-            collection.addItem(i,row);
+            collection.addItem(i, row);
         }
 
         views.setRemoteAdapter(R.id.list_tasks, collection.build());
+    }
+
+    private static RemoteViews createTaskRow(Context context, TodoItem item) {
+        RemoteViews row = new RemoteViews(context.getPackageName(), R.layout.todo_task_item);
+
+        row.setTextViewText(R.id.tv_task_title, item.getTitle());
+
+        boolean completed = item.isCompleted();
+
+        row.setInt(R.id.img_task_check,
+                "setBackgroundResource",
+                completed ? R.drawable.todo_checked_bg : R.drawable.todo_unchecked_bg
+        );
+
+        row.setImageViewResource(R.id.img_task_check,
+                completed ? R.drawable.ic_todo_check : 0);
+
+        // Xử lý nút checked
+        Intent toggleIntent = new Intent();
+        toggleIntent.putExtra(EXTRA_TASK_ID, item.getId());
+        toggleIntent.putExtra(EXTRA_OPERATION, OP_TOGGLE);
+
+        row.setOnClickFillInIntent(R.id.btn_toggle_task, toggleIntent);
+
+        // Xử lý xóa task
+        Intent deleteIntent = new Intent();
+        deleteIntent.putExtra(EXTRA_TASK_ID, item.getId());
+        deleteIntent.putExtra(EXTRA_OPERATION, OP_DELETE);
+
+        row.setOnClickFillInIntent(R.id.btn_delete_task, deleteIntent);
+
+        return row;
     }
 
     public static void updateAllWidgets(Context context) {
@@ -181,7 +187,7 @@ public class TodoWidgetProvider extends AppWidgetProvider {
 
         int[] widgetIds = manager.getAppWidgetIds(provider);
 
-        if (widgetIds.length == 0){
+        if (widgetIds.length == 0) {
             return;
         }
 
