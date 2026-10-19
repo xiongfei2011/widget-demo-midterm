@@ -1,9 +1,5 @@
 <resources>
     <string name="todo_widget_name">To-do</string>
-    <string name="todo_today_tasks">Công việc hôm nay</string>
-    <string name="todo_today_title">Hôm nay</string>
-    <string name="todo_task_count_empty">0/0 việc đã xong</string>
-    <string name="todo_task_percent_empty">0%</string>
     <string name="todo_empty_message">Chưa có công việc nào\nNhấn + để thêm công việc mới</string>
     <string name="todo_add_task">Thêm công việc</string>
     <string name="todo_add_task_button">"+  Thêm công việc"</string>
@@ -13,6 +9,5 @@
     <string name="todo_error_empty">Hãy nhập nội dung công việc</string>
     <string name="todo_error_limit">Chỉ được lưu tối đa %1$d công việc</string>
     <string name="todo_error_storage">Không thể đọc hoặc lưu công việc</string>
-    <string name="todo_task_count">%1$d/%2$d việc đã xong</string>
     <string name="todo_delete_task">Xóa công việc</string>
 </resources>

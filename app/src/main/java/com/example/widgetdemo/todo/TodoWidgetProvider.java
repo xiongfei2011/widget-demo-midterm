@@ -7,9 +7,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.util.FloatProperty;
-import android.util.Log;
-import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -146,9 +143,6 @@ public class TodoWidgetProvider extends AppWidgetProvider {
             RemoteViews row = new RemoteViews(context.getPackageName(), R.layout.todo_task_item);
 
             row.setTextViewText(R.id.tv_task_title, item.getTitle());
-
-            row.setViewVisibility(R.id.tv_task_meta, View.GONE);
-            row.setViewVisibility(R.id.task_section_divider, View.GONE);
 
             boolean completed = item.isCompleted();
 

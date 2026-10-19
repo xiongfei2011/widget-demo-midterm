@@ -54,19 +54,6 @@
                 android:textSize="15sp"
                 android:textStyle="bold"
                 tools:text="Gửi bản thiết kế" />
-
-            <TextView
-                android:id="@+id/tv_task_meta"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="#647560"
-                android:textSize="12sp"
-                android:visibility="gone"
-                tools:text="10:30 · Công việc"
-                tools:visibility="visible" />
         </LinearLayout>
 
         <ImageView

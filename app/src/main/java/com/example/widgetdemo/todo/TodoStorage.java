@@ -38,7 +38,8 @@ public class TodoStorage {
                 items.add(new TodoItem(
                         object.getString("id"),
                         object.getString("title"),
-                        object.optBoolean("completed", false) //Giúp lưu công việc trước dù đã complete
+                        // Dữ liệu cũ chưa có trường completed thì mặc định chưa hoàn thành.
+                        object.optBoolean("completed", false)
                 ));
             }
         } catch (JSONException e){
