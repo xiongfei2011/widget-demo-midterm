@@ -68,5 +68,14 @@
                 tools:text="10:30 · Công việc"
                 tools:visibility="visible" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btn_delete_task"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:src="@drawable/ic_todo_delete"
+            android:contentDescription="@string/todo_delete_task" />
+
     </LinearLayout>
 </LinearLayout>

@@ -37,7 +37,8 @@ public class TodoStorage {
 
                 items.add(new TodoItem(
                         object.getString("id"),
-                        object.getString("title")
+                        object.getString("title"),
+                        object.optBoolean("completed", false) //Giúp lưu công việc trước dù đã complete
                 ));
             }
         } catch (JSONException e){
@@ -61,7 +62,8 @@ public class TodoStorage {
 
         items.add(new TodoItem(
                 UUID.randomUUID().toString(),
-                cleanTitle
+                cleanTitle,
+                false
         ));
 
         saveItem(context,items);
@@ -81,6 +83,7 @@ public class TodoStorage {
                 JSONObject object = new JSONObject();
                 object.put("id", item.getId());
                 object.put("title", item.getTitle());
+                object.put("completed", item.isCompleted());
                 array.put(object);
             }
         } catch (JSONException e) {
@@ -88,5 +91,36 @@ public class TodoStorage {
         }
 
         preferences(context).edit().putString(KEY_ITEMS, array.toString()).apply();
+    }
+
+    public static TodoItem findItem(Context context, String id){
+        for (TodoItem item : loadItem(context)){
+            if (item.getId().equals(id)){
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public static boolean updateItem(Context context, String id, String title, boolean completed){
+        String cleanTitle = title.trim();
+
+        if (cleanTitle.isEmpty()){
+            return false;
+        }
+
+        List<TodoItem> items = loadItem(context);
+
+        for(int i = 0; i < items.size(); i++){
+            TodoItem item = items.get(i);
+
+            if (item.getId().equals(id)){
+                items.set(i, new TodoItem(id, cleanTitle, completed));
+                saveItem(context, items);
+                return true;
+            }
+        }
+
+        return false;
     }
 }

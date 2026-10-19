@@ -22,22 +22,12 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tv_todo_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="@string/todo_today_tasks"
-                android:textColor="#647560"
-                android:textSize="12sp"
-                tools:text="Thứ Hai, 19 tháng 10" />
-
-            <TextView
                 android:id="@+id/tv_todo_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:maxLines="1"
-                android:text="@string/todo_today_title"
+                android:text="@string/todo_widget_name"
                 android:textColor="#263F31"
                 android:textSize="28sp"
                 android:textStyle="bold" />
@@ -51,44 +41,6 @@
             android:padding="12dp"
             android:src="@drawable/ic_todo_list" />
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
-
-        <TextView
-            android:id="@+id/tv_task_count"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/todo_task_count_empty"
-            android:textColor="#647560"
-            android:textSize="12sp"
-            tools:text="2/5 việc đã xong" />
-
-        <TextView
-            android:id="@+id/tv_task_percent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/todo_task_percent_empty"
-            android:textColor="#356848"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            tools:text="40%" />
-    </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/progress_tasks"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:layout_marginTop="8dp"
-        android:indeterminate="false"
-        android:max="100"
-        android:progress="0"
-        android:progressDrawable="@drawable/todo_progress"
-        tools:progress="40" />
 
     <FrameLayout
         android:layout_width="match_parent"
