@@ -1,6 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/todo_widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:text="@string/todo_widget_name" />
+    android:background="@drawable/todo_widget_bg"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:layout_height="490dp"
+    tools:layout_width="340dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_todo_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/todo_today_tasks"
+                android:textColor="#647560"
+                android:textSize="12sp"
+                tools:text="Thứ Hai, 19 tháng 10" />
+
+            <TextView
+                android:id="@+id/tv_todo_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:maxLines="1"
+                android:text="@string/todo_today_title"
+                android:textColor="#263F31"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/todo_badge_bg"
+            android:importantForAccessibility="no"
+            android:padding="12dp"
+            android:src="@drawable/ic_todo_list" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/tv_task_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/todo_task_count_empty"
+            android:textColor="#647560"
+            android:textSize="12sp"
+            tools:text="2/5 việc đã xong" />
+
+        <TextView
+            android:id="@+id/tv_task_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/todo_task_percent_empty"
+            android:textColor="#356848"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="40%" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_tasks"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_marginTop="8dp"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/todo_progress"
+        tools:progress="40" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:background="@drawable/todo_card_bg"
+        android:padding="8dp">
+
+        <ListView
+            android:id="@+id/list_tasks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:scrollbars="none"
+            tools:listitem="@layout/todo_task_item" />
+
+        <TextView
+            android:id="@+id/tv_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:lineSpacingExtra="6dp"
+            android:padding="16dp"
+            android:text="@string/todo_empty_message"
+            android:textColor="#7C8A77"
+            android:textSize="14sp"
+            tools:visibility="gone" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/btn_add_task"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/todo_add_bg"
+        android:contentDescription="@string/todo_add_task"
+        android:gravity="center"
+        android:text="@string/todo_add_task_button"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+</LinearLayout>
