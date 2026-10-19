@@ -85,20 +85,6 @@ public class TodoAddActivity extends AppCompatActivity {
     }
 
     private void notifyWidgets(){
-        AppWidgetManager manager = AppWidgetManager.getInstance(this);
-
-        ComponentName provider = new ComponentName(this, TodoWidgetProvider.class);
-
-        int[] widgetIds = manager.getAppWidgetIds(provider);
-
-        if (widgetIds.length == 0){
-            return;
-        }
-
-        Intent updateIntent = new Intent(this, TodoWidgetProvider.class);
-        updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds);
-
-        sendBroadcast(updateIntent);
+        TodoWidgetProvider.updateAllWidgets(this);
     }
 }
