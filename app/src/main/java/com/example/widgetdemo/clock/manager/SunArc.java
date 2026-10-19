@@ -11,26 +11,23 @@ import com.example.widgetdemo.clock.model.ClockData;
 
 import java.util.Locale;
 
-// vẽ biểu đồ vòm của mặt trời lên Bitmap để hiển thị trên widget
 public class SunArc {
 
     private static final int WIDTH = 800;
     private static final int HEIGHT = 260;
 
-    // vị trí bình minh
     private static final float START_X = 80f;
     private static final float START_Y = 160f;
-    // trưa
     private static final float CONTROL_X = 400f;
     private static final float CONTROL_Y = 20f;
-    // sunset
     private static final float END_X = 720f;
     private static final float END_Y = 160f;
 
-    // mặt trời mọc/ lặn
+    private static final float SUNSET_POSITION = 0.8f;
+    private static final int END_OF_DAY_MINUTES = 24 * 60 - 1;
+
     private static final double SUNRISE_ZENITH_DEGREES = 90.833;
 
-    // mặc định vòm ở hcm (nếu k chọn múi giờ khác)
     private static double[] getCoordinates(String timeZoneId) {
         if (timeZoneId.contains("New_York")) return new double[]{40.71, -74.01};
         if (timeZoneId.contains("London")) return new double[]{51.51, -0.13};
@@ -38,16 +35,13 @@ public class SunArc {
         return new double[]{10.76, 106.66};
     }
 
-
     private static int[] calculateSunriseSunsetMinutes(ClockData clock) {
         double[] coordinates = getCoordinates(clock.getTimeZoneId());
         double latitude = coordinates[0];
         double longitude = coordinates[1];
 
-        // lệch quỹ đạo
         double gamma = 2.0 * Math.PI / 365.0 * (clock.getDayOfYear() - 1);
 
-        // tính chênh lệch
         double equationOfTime = 229.18 * (0.000075
                 + 0.001868 * Math.cos(gamma)
                 - 0.032077 * Math.sin(gamma)
@@ -70,7 +64,6 @@ public class SunArc {
         double hourAngle = Math.toDegrees(Math.acos(cosHourAngle));
 
         int offset = clock.getUtcOffsetMinutes();
-        // dự đoán (phút) mọc và lặn
         int sunrise = (int) Math.round(720 - 4 * (longitude + hourAngle) - equationOfTime + offset);
         int sunset = (int) Math.round(720 - 4 * (longitude - hourAngle) - equationOfTime + offset);
 
@@ -81,6 +74,17 @@ public class SunArc {
         if (currentMinutes <= sunriseMinutes) return 0f;
         if (currentMinutes >= sunsetMinutes) return 1f;
         return (float) (currentMinutes - sunriseMinutes) / (sunsetMinutes - sunriseMinutes);
+    }
+
+    private static float calculateArcPosition(int currentMinutes, int sunriseMinutes, int sunsetMinutes) {
+        if (currentMinutes <= sunriseMinutes) return 0f;
+        if (currentMinutes < sunsetMinutes) {
+            return SUNSET_POSITION * ((float) (currentMinutes - sunriseMinutes) / (sunsetMinutes - sunriseMinutes));
+        }
+        if (END_OF_DAY_MINUTES <= sunsetMinutes) return SUNSET_POSITION;
+        if (currentMinutes >= END_OF_DAY_MINUTES) return 1f;
+        return SUNSET_POSITION + (1f - SUNSET_POSITION)
+                * ((float) (currentMinutes - sunsetMinutes) / (END_OF_DAY_MINUTES - sunsetMinutes));
     }
 
     private static String formatTime(int totalMinutes, boolean is24Hour) {
@@ -101,8 +105,7 @@ public class SunArc {
         return u * u * p0 + 2f * u * t * p1 + t * t * p2;
     }
 
-    //vẽ khung vòm
-    private static void drawArc(Canvas canvas, Paint paint, float progress) {
+    private static void drawArc(Canvas canvas, Paint paint, float position) {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(6f);
         paint.setColor(0x55FFFFFF);
@@ -112,16 +115,16 @@ public class SunArc {
         fullArc.quadTo(CONTROL_X, CONTROL_Y, END_X, END_Y);
         canvas.drawPath(fullArc, paint);
 
-        if (progress > 0f) {
-            float splitX = START_X + (CONTROL_X - START_X) * progress;
-            float splitY = START_Y + (CONTROL_Y - START_Y) * progress;
+        if (position > 0f) {
+            float splitX = START_X + (CONTROL_X - START_X) * position;
+            float splitY = START_Y + (CONTROL_Y - START_Y) * position;
 
             Path traveledArc = new Path();
             traveledArc.moveTo(START_X, START_Y);
             traveledArc.quadTo(
                     splitX, splitY,
-                    bezier(START_X, CONTROL_X, END_X, progress),
-                    bezier(START_Y, CONTROL_Y, END_Y, progress));
+                    bezier(START_X, CONTROL_X, END_X, position),
+                    bezier(START_Y, CONTROL_Y, END_Y, position));
 
             paint.setStrokeWidth(8f);
             paint.setColor(0xFFFFCC00);
@@ -129,13 +132,12 @@ public class SunArc {
         }
     }
 
-    // vẽ cục mặt trời/ trăng
-    private static void drawSun(Canvas canvas, Paint paint, float progress) {
-        float x = bezier(START_X, CONTROL_X, END_X, progress);
-        float y = bezier(START_Y, CONTROL_Y, END_Y, progress);
+    private static void drawSun(Canvas canvas, Paint paint, float position, boolean isDay) {
+        float x = bezier(START_X, CONTROL_X, END_X, position);
+        float y = bezier(START_Y, CONTROL_Y, END_Y, position);
 
         paint.setStyle(Paint.Style.FILL);
-        if (progress > 0f && progress < 1f) {
+        if (isDay) {
             paint.setColor(0x44FFD700);
             canvas.drawCircle(x, y, 28f, paint);
             paint.setColor(0xFFFFD700);
@@ -168,19 +170,21 @@ public class SunArc {
         return calculateProgress(clock.getMinutesOfDay(), sunTimes[0], sunTimes[1]);
     }
 
-    // tạo bitmap để vẽ vòm + hiệu ứng cục mặt trời/trăng dựa theo thời gian thực
     public static Bitmap drawSolarArc(Context context, String timeZoneId) {
         ClockData clock = new ClockData(timeZoneId);
         int[] sunTimes = calculateSunriseSunsetMinutes(clock);
-        float progress = calculateProgress(clock.getMinutesOfDay(), sunTimes[0], sunTimes[1]);
+        int now = clock.getMinutesOfDay();
+        float dayProgress = calculateProgress(now, sunTimes[0], sunTimes[1]);
+        boolean isDay = dayProgress > 0f && dayProgress < 1f;
+        float position = calculateArcPosition(now, sunTimes[0], sunTimes[1]);
         boolean is24Hour = DateFormat.is24HourFormat(context);
 
         Bitmap bitmap = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        drawArc(canvas, paint, progress);
-        drawSun(canvas, paint, progress);
+        drawArc(canvas, paint, position);
+        drawSun(canvas, paint, position, isDay);
         drawLabels(canvas, paint, formatTime(sunTimes[0], is24Hour), formatTime(sunTimes[1], is24Hour));
 
         return bitmap;
