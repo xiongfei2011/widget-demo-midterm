@@ -1,3 +1,13 @@
 <resources>
     <string name="todo_widget_name">To-do</string>
+    <string name="todo_empty_message">Chưa có công việc nào\nNhấn + để thêm công việc mới</string>
+    <string name="todo_add_task">Thêm công việc</string>
+    <string name="todo_add_task_button">"+  Thêm công việc"</string>
+    <string name="todo_toggle_task">Đổi trạng thái hoàn thành</string>
+    <string name="todo_input_hint">Nhập công việc cần làm</string>
+    <string name="todo_save">Lưu công việc</string>
+    <string name="todo_error_empty">Hãy nhập nội dung công việc</string>
+    <string name="todo_error_limit">Chỉ được lưu tối đa %1$d công việc</string>
+    <string name="todo_error_storage">Không thể đọc hoặc lưu công việc</string>
+    <string name="todo_delete_task">Xóa công việc</string>
 </resources>
