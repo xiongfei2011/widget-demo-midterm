@@ -1,63 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/clock_root_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#262456"
-    android:orientation="vertical"
-    android:gravity="center_vertical"
-    android:padding="10dp">
+    android:layout_height="match_parent">
 
-    <!-- hiện thị lên màn hình chính -->
+    <ImageView
+        android:id="@+id/img_clock_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        android:src="@drawable/clock_night" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <TextClock
-                android:id="@+id/tv_clock_time"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:format12Hour="hh:mm a"
-                android:format24Hour="HH:mm"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"/>
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <TextClock
-                android:id="@+id/tv_clock_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:format12Hour="EEE, MMM d"
-                android:format24Hour="EEE, MMM d"
-                android:textSize="11sp"
-                android:textColor="#E0E0E0"/>
+                <TextClock
+                    android:id="@+id/tv_clock_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:format12Hour="hh:mm a"
+                    android:format24Hour="HH:mm"
+                    android:textColor="@android:color/white"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <TextClock
+                    android:id="@+id/tv_clock_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:format12Hour="EEE, MMM d"
+                    android:format24Hour="EEE, MMM d"
+                    android:textColor="#E0E0E0"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/img_day_night_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="Icon"
+                android:src="@drawable/clock_sun" />
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/img_day_night_icon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/clock_sun"
-            android:contentDescription="Icon"/>
+            android:id="@+id/img_solar_arc"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:contentDescription="Solar Arc Tracker"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
     </LinearLayout>
-
-    <!-- vòm hiện ở 4x2 hoặc 2x2 -->
-    <ImageView
-        android:id="@+id/img_solar_arc"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="4dp"
-        android:scaleType="fitCenter"
-        android:visibility="gone"
-        android:contentDescription="Solar Arc Tracker"/>
-
-</LinearLayout>
+</FrameLayout>
