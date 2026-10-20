@@ -33,6 +33,7 @@ import java.util.concurrent.Executors;
 public class WeatherWidgetProvider extends AppWidgetProvider {
 
     public static final String ACTION_REFRESH = "android.appwidget.action.ACTION_REFRESH_WEATHER";
+    // Note by Khai: API free thang` nao` muon lay cu lay :V
     private static final String API_KEY = "7bbd77a9bd87869b030a8a2aa38960cc";
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
