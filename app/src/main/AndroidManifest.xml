@@ -84,6 +84,13 @@
         </receiver>
 
         <activity
+            android:name=".calendar.EventAddActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:taskAffinity="${applicationId}.calendar.add"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".todo.TodoAddActivity"
             android:excludeFromRecents="true"
             android:exported="false"
