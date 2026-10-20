@@ -16,6 +16,10 @@ import java.util.Locale;
 
 public class EventAddActivity extends AppCompatActivity {
 
+    public static final String EXTRA_YEAR = "extra_year";
+    public static final String EXTRA_MONTH = "extra_month";
+    public static final String EXTRA_DAY = "extra_day";
+
     private EditText edtTitle;
     private EditText edtDateSelect;
     private EditText edtTime;
@@ -33,6 +37,14 @@ public class EventAddActivity extends AppCompatActivity {
         edtDateSelect = findViewById(R.id.edt_date_select);
         edtTime = findViewById(R.id.edt_time);
         btnSave = findViewById(R.id.btn_save_event);
+
+        int extraYear = getIntent().getIntExtra(EXTRA_YEAR, -1);
+        int extraMonth = getIntent().getIntExtra(EXTRA_MONTH, -1);
+        int extraDay = getIntent().getIntExtra(EXTRA_DAY, -1);
+
+        if (extraYear != -1 && extraMonth != -1 && extraDay != -1) {
+            selectedCalendar.set(extraYear, extraMonth, extraDay);
+        }
 
         edtDateSelect.setText(dateFormat.format(selectedCalendar.getTime()));
         edtTime.setText("14:30");
@@ -82,7 +94,7 @@ public class EventAddActivity extends AppCompatActivity {
 
             selectedCalendar.set(Calendar.HOUR_OF_DAY, hour);
             selectedCalendar.set(Calendar.MINUTE, minute);
-            selectedCalendar.set(Calendar.SECOND, 0);
+            selectedCalendar.set(Calendar.SECOND, 0);`
             selectedCalendar.set(Calendar.MILLISECOND, 0);
 
             long timestamp = selectedCalendar.getTimeInMillis();

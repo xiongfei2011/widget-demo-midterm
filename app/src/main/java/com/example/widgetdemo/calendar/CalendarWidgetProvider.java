@@ -6,22 +6,21 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.example.widgetdemo.R;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 public class CalendarWidgetProvider extends AppWidgetProvider {
 
-    private static final String ACTION_DELETE = "com.example.widgetdemo.calendar.ACTION_DELETE";
-    private static final String EXTRA_EVENT_ID = "com.example.widgetdemo.calendar.EXTRA_EVENT_ID";
+    private static final String ACTION_PREV = "com.example.widgetdemo.calendar.ACTION_PREV";
+    private static final String ACTION_NEXT = "com.example.widgetdemo.calendar.ACTION_NEXT";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -34,14 +33,36 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         String action = intent.getAction();
+        int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 
-        if (ACTION_DELETE.equals(action)) {
-            String eventId = intent.getStringExtra(EXTRA_EVENT_ID);
-            if (eventId != null) {
-                EventStorage.deleteEvent(context, eventId);
-                updateAllWidgets(context);
-            }
+        if (ACTION_PREV.equals(action)) {
+            shiftMonth(context, appWidgetId, -1);
+            updateAllWidgets(context);
+        } else if (ACTION_NEXT.equals(action)) {
+            shiftMonth(context, appWidgetId, 1);
+            updateAllWidgets(context);
         }
+    }
+
+    private static void shiftMonth(Context context, int widgetId, int delta) {
+        SharedPreferences prefs = context.getSharedPreferences("calendar_widget_state", Context.MODE_PRIVATE);
+        Calendar cal = Calendar.getInstance();
+        int year = prefs.getInt("year_" + widgetId, cal.get(Calendar.YEAR));
+        int month = prefs.getInt("month_" + widgetId, cal.get(Calendar.MONTH));
+
+        month += delta;
+        if (month > 11) {
+            month = 0;
+            year++;
+        } else if (month < 0) {
+            month = 11;
+            year--;
+        }
+
+        prefs.edit()
+                .putInt("year_" + widgetId, year)
+                .putInt("month_" + widgetId, month)
+                .apply();
     }
 
     private static void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
@@ -64,57 +85,108 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
         );
         views.setOnClickPendingIntent(R.id.btn_add_event_widget, pendingAddIntent);
 
-        long currentTime = System.currentTimeMillis();
-        List<EventItem> allEvents = EventStorage.loadEvents(context);
-        List<EventItem> upcomingEvents = new ArrayList<>();
-
-        for (EventItem item : allEvents) {
-            if (item.getTimestamp() >= currentTime) {
-                upcomingEvents.add(item);
-            }
-        }
-
-        upcomingEvents.sort(Comparator.comparingLong(EventItem::getTimestamp));
-
-        Intent actionIntent = new Intent(context, CalendarWidgetProvider.class);
-        actionIntent.setAction(ACTION_DELETE);
-        actionIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-
-        PendingIntent actionPendingIntent = PendingIntent.getBroadcast(
+        Intent prevIntent = new Intent(context, CalendarWidgetProvider.class);
+        prevIntent.setAction(ACTION_PREV);
+        prevIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        prevIntent.setData(Uri.parse("calendar://widget/prev/" + appWidgetId));
+        PendingIntent pendingPrev = PendingIntent.getBroadcast(
                 context,
-                appWidgetId + 50000,
-                actionIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+                appWidgetId + 2000,
+                prevIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
+        views.setOnClickPendingIntent(R.id.btn_prev_month, pendingPrev);
 
-        views.setPendingIntentTemplate(
-                R.id.list_events,
-                actionPendingIntent
+        Intent nextIntent = new Intent(context, CalendarWidgetProvider.class);
+        nextIntent.setAction(ACTION_NEXT);
+        nextIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        nextIntent.setData(Uri.parse("calendar://widget/next/" + appWidgetId));
+        PendingIntent pendingNext = PendingIntent.getBroadcast(
+                context,
+                appWidgetId + 3000,
+                nextIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
+        views.setOnClickPendingIntent(R.id.btn_next_month, pendingNext);
 
-        RemoteViews.RemoteCollectionItems.Builder collection =
-                new RemoteViews.RemoteCollectionItems.Builder()
-                        .setViewTypeCount(1)
-                        .setHasStableIds(false);
+        SharedPreferences prefs = context.getSharedPreferences("calendar_widget_state", Context.MODE_PRIVATE);
+        Calendar cal = Calendar.getInstance();
+        int year = prefs.getInt("year_" + appWidgetId, cal.get(Calendar.YEAR));
+        int month = prefs.getInt("month_" + appWidgetId, cal.get(Calendar.MONTH));
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+        // Set Header Title in Vietnamese (e.g. "Tháng 4 2025")
+        views.setTextViewText(R.id.tv_month_title, "Tháng " + (month + 1) + " " + year);
 
-        for (int i = 0; i < upcomingEvents.size(); i++) {
-            EventItem event = upcomingEvents.get(i);
-            RemoteViews row = new RemoteViews(context.getPackageName(), R.layout.calendar_event_item);
+        // Build Calendar Grid (5 rows x 7 days = 35 cells)
+        views.removeAllViews(R.id.layout_calendar_grid);
 
-            row.setTextViewText(R.id.tv_event_title, event.getTitle());
-            row.setTextViewText(R.id.tv_event_time, sdf.format(new Date(event.getTimestamp())));
+        cal.set(year, month, 1, 0, 0, 0);
+        int maxDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK); // Sunday=1, Monday=2 ...
+        int startIndex = (firstDayOfWeek - Calendar.MONDAY + 7) % 7; // Monday = 0
 
-            Intent fillInIntent = new Intent();
-            fillInIntent.putExtra(EXTRA_EVENT_ID, event.getId());
-            row.setOnClickFillInIntent(R.id.btn_delete_event, fillInIntent);
+        List<EventItem> allEvents = EventStorage.loadEvents(context);
 
-            collection.addItem(i, row);
+        int currentDayCounter = 1 - startIndex;
+        for (int rowIdx = 0; rowIdx < 5; rowIdx++) {
+            RemoteViews rowView = new RemoteViews(context.getPackageName(), R.layout.calendar_grid_row);
+
+            for (int colIdx = 0; colIdx < 7; colIdx++) {
+                RemoteViews cellView = new RemoteViews(context.getPackageName(), R.layout.calendar_day_cell);
+
+                if (currentDayCounter > 0 && currentDayCounter <= maxDays) {
+                    cellView.setTextViewText(R.id.tv_day_number, String.valueOf(currentDayCounter));
+                    cellView.setViewVisibility(R.id.tv_day_number, View.VISIBLE);
+
+                    // Find events for this specific day
+                    Calendar dayCal = Calendar.getInstance();
+                    dayCal.set(year, month, currentDayCounter, 0, 0, 0);
+                    long dayStart = dayCal.getTimeInMillis();
+                    dayCal.set(year, month, currentDayCounter, 23, 59, 59);
+                    long dayEnd = dayCal.getTimeInMillis();
+
+                    List<EventItem> dayEvents = new ArrayList<>();
+                    for (EventItem event : allEvents) {
+                        if (event.getTimestamp() >= dayStart && event.getTimestamp() <= dayEnd) {
+                            dayEvents.add(event);
+                        }
+                    }
+
+                    cellView.removeAllViews(R.id.layout_cell_events);
+                    for (int e = 0; e < Math.min(2, dayEvents.size()); e++) {
+                        EventItem ev = dayEvents.get(e);
+                        RemoteViews chipView = new RemoteViews(context.getPackageName(), R.layout.calendar_event_chip);
+                        chipView.setTextViewText(R.id.tv_event_chip, ev.getTitle());
+                        cellView.addView(R.id.layout_cell_events, chipView);
+                    }
+
+                    // Click on day cell to view details in EventDetailActivity
+                    Intent detailIntent = new Intent(context, EventDetailActivity.class);
+                    detailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    detailIntent.putExtra(EventDetailActivity.EXTRA_YEAR, year);
+                    detailIntent.putExtra(EventDetailActivity.EXTRA_MONTH, month);
+                    detailIntent.putExtra(EventDetailActivity.EXTRA_DAY, currentDayCounter);
+                    detailIntent.setData(Uri.parse("calendar://widget/day/" + appWidgetId + "/" + year + "/" + month + "/" + currentDayCounter));
+                    PendingIntent pendingDetail = PendingIntent.getActivity(
+                            context,
+                            (appWidgetId * 10000) + currentDayCounter,
+                            detailIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                    );
+                    cellView.setOnClickPendingIntent(R.id.layout_day_cell_root, pendingDetail);
+
+                } else {
+                    cellView.setTextViewText(R.id.tv_day_number, "");
+                    cellView.setViewVisibility(R.id.tv_day_number, View.INVISIBLE);
+                    cellView.removeAllViews(R.id.layout_cell_events);
+                }
+
+                rowView.addView(R.id.row_container, cellView);
+                currentDayCounter++;
+            }
+
+            views.addView(R.id.layout_calendar_grid, rowView);
         }
-
-        views.setRemoteAdapter(R.id.list_events, collection.build());
-        views.setEmptyView(R.id.list_events, R.id.tv_no_events);
 
         return views;
     }
