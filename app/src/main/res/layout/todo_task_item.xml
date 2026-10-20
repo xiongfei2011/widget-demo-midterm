@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/todo_task_row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -42,7 +43,9 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:paddingVertical="10dp"
-            android:paddingEnd="8dp">
+            android:paddingEnd="8dp"
+            android:paddingStart="0dp"
+            >
 
             <TextView
                 android:id="@+id/tv_task_title"
@@ -55,14 +58,5 @@
                 android:textStyle="bold"
                 tools:text="Gửi bản thiết kế" />
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/btn_delete_task"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="12dp"
-            android:src="@drawable/ic_todo_delete"
-            android:contentDescription="@string/todo_delete_task" />
-
     </LinearLayout>
 </LinearLayout>

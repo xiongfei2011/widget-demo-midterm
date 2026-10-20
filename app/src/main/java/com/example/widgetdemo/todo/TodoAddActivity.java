@@ -26,6 +26,7 @@ public class TodoAddActivity extends AppCompatActivity {
         input = findViewById(R.id.todo_input);
 
         findViewById(R.id.btn_save).setOnClickListener(view -> saveTodo());
+        findViewById(R.id.btn_cancel).setOnClickListener(view -> finish());
     }
 
     private void setupInsets()
