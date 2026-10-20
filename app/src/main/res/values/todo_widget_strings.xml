@@ -9,5 +9,6 @@
     <string name="todo_error_empty">Hãy nhập nội dung công việc</string>
     <string name="todo_error_limit">Chỉ được lưu tối đa %1$d công việc</string>
     <string name="todo_error_storage">Không thể đọc hoặc lưu công việc</string>
-    <string name="todo_delete_task">Xóa công việc</string>
+    <string name="todo_delete_task">Xóa</string>
+    <string name="todo_cancel_add">Thoát</string>
 </resources>

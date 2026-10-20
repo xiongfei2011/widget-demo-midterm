@@ -25,7 +25,8 @@ public class TodoWidgetProvider extends AppWidgetProvider {
 
     private static final String EXTRA_OPERATION = "todo_operation";
     private static final String OP_TOGGLE = "toggle";
-    private static final String OP_DELETE = "delete";
+    private static final String OP_SELECT = "select";
+    private static final String OP_DELETE_SELECTED = "delete_selected";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -42,16 +43,31 @@ public class TodoWidgetProvider extends AppWidgetProvider {
 
         if (!ACTION_TASK_ACTION.equals(intent.getAction())) return;
 
-        String taskID = intent.getStringExtra(EXTRA_TASK_ID);
+        String taskId = intent.getStringExtra(EXTRA_TASK_ID);
         String operation = intent.getStringExtra(EXTRA_OPERATION);
 
-        if (taskID == null) return;
+        if (OP_DELETE_SELECTED.equals(operation)) {
+            try {
+                TodoStorage.deleteSelectedItems(context);
+                updateAllWidgets(context);
+            } catch (IllegalStateException e) {
+                Toast.makeText(
+                        context,
+                        R.string.todo_error_storage,
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+
+            return;
+        }
+
+        if (taskId == null) return;
 
         try {
-            if (OP_DELETE.equals(operation)) {
-                TodoStorage.deleteItem(context, taskID);
+            if (OP_SELECT.equals(operation)) {
+                TodoStorage.toggleSelected(context, taskId);
             } else if (OP_TOGGLE.equals(operation)) {
-                TodoItem item = TodoStorage.findItem(context, taskID);
+                TodoItem item = TodoStorage.findItem(context, taskId);
 
                 if (item != null) {
                     TodoStorage.updateItem(
@@ -79,12 +95,13 @@ public class TodoWidgetProvider extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.todo_widget);
 
         bindAddButton(context, views);
+        bindDeleteSelectedButton(context, views);
 
         List<TodoItem> items;
         String emptyMessage = context.getString(R.string.todo_empty_message);
 
         try {
-            items = TodoStorage.loadItem(context);
+            items = TodoStorage.loadItems(context);
         } catch (IllegalStateException e) {
             Toast.makeText(context, "Cannot load tasks", Toast.LENGTH_SHORT).show();
 
@@ -112,6 +129,28 @@ public class TodoWidgetProvider extends AppWidgetProvider {
         );
 
         views.setOnClickPendingIntent(R.id.btn_add_task, pendingIntent);
+    }
+
+    private static void bindDeleteSelectedButton(
+            Context context,
+            RemoteViews views
+    ) {
+        Intent deleteIntent = new Intent(context, TodoWidgetProvider.class);
+        deleteIntent.setAction(ACTION_TASK_ACTION);
+        deleteIntent.putExtra(EXTRA_OPERATION, OP_DELETE_SELECTED);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context,
+                2,
+                deleteIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        views.setOnClickPendingIntent(
+                R.id.btn_delete_selected_tasks,
+                pendingIntent
+        );
     }
 
     private static void bindTaskList(Context context, RemoteViews views, List<TodoItem> items) {
@@ -154,10 +193,17 @@ public class TodoWidgetProvider extends AppWidgetProvider {
         row.setTextViewText(R.id.tv_task_title, item.getTitle());
 
         boolean completed = item.isCompleted();
+        boolean selected = TodoStorage.isSelected(context, item.getId());
 
         row.setInt(R.id.img_task_check,
                 "setBackgroundResource",
                 completed ? R.drawable.todo_checked_bg : R.drawable.todo_unchecked_bg
+        );
+
+        row.setInt(
+                R.id.todo_task_row,
+                "setBackgroundResource",
+                selected ? R.drawable.todo_task_selected_bg : 0
         );
 
         row.setImageViewResource(R.id.img_task_check,
@@ -170,12 +216,15 @@ public class TodoWidgetProvider extends AppWidgetProvider {
 
         row.setOnClickFillInIntent(R.id.btn_toggle_task, toggleIntent);
 
-        // Xử lý xóa task
-        Intent deleteIntent = new Intent();
-        deleteIntent.putExtra(EXTRA_TASK_ID, item.getId());
-        deleteIntent.putExtra(EXTRA_OPERATION, OP_DELETE);
+        // Xử lý chọn hoặc bỏ chọn task
+        Intent selectIntent = new Intent();
+        selectIntent.putExtra(EXTRA_TASK_ID, item.getId());
+        selectIntent.putExtra(EXTRA_OPERATION, OP_SELECT);
 
-        row.setOnClickFillInIntent(R.id.btn_delete_task, deleteIntent);
+        row.setOnClickFillInIntent(
+                R.id.todo_task_row,
+                selectIntent
+        );
 
         return row;
     }

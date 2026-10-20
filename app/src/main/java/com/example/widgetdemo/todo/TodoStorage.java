@@ -11,11 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 public class TodoStorage {
     public static final int MAX_ITEMS = 10;
 
     private static final String PREFS_NAME = "todo_storage";
     private static final String KEY_ITEMS = "items";
+    private static final String KEY_SELECTED_IDS = "selected_ids";
 
     private TodoStorage() {
     }
@@ -25,7 +30,7 @@ public class TodoStorage {
                 Context.MODE_PRIVATE
         );
     }
-    public static List<TodoItem> loadItem(Context context){
+    public static List<TodoItem> loadItems(Context context){
         String json = preferences(context).getString(KEY_ITEMS, "[]");
         List<TodoItem> items = new ArrayList<>();
 
@@ -55,7 +60,7 @@ public class TodoStorage {
             return false;
         }
 
-        List<TodoItem> items = loadItem(context);
+        List<TodoItem> items = loadItems(context);
 
         if (items.size() >= MAX_ITEMS){
             return false;
@@ -67,16 +72,10 @@ public class TodoStorage {
                 false
         ));
 
-        saveItem(context,items);
+        saveItems(context,items);
         return true;
     }
-    public static void deleteItem(Context context, String id){
-        List<TodoItem> items = loadItem(context);
-        items.removeIf(item -> item.getId().equals(id));
-        saveItem(context,items);
-    }
-
-    private static void saveItem(Context context, List<TodoItem> items){
+    private static void saveItems(Context context, List<TodoItem> items){
         JSONArray array = new JSONArray();
 
         try {
@@ -95,7 +94,7 @@ public class TodoStorage {
     }
 
     public static TodoItem findItem(Context context, String id){
-        for (TodoItem item : loadItem(context)){
+        for (TodoItem item : loadItems(context)){
             if (item.getId().equals(id)){
                 return item;
             }
@@ -103,25 +102,67 @@ public class TodoStorage {
         return null;
     }
 
-    public static boolean updateItem(Context context, String id, String title, boolean completed){
+    public static void updateItem(Context context, String id, String title, boolean completed){
         String cleanTitle = title.trim();
 
         if (cleanTitle.isEmpty()){
-            return false;
+            return;
         }
 
-        List<TodoItem> items = loadItem(context);
+        List<TodoItem> items = loadItems(context);
 
         for(int i = 0; i < items.size(); i++){
             TodoItem item = items.get(i);
 
             if (item.getId().equals(id)){
                 items.set(i, new TodoItem(id, cleanTitle, completed));
-                saveItem(context, items);
-                return true;
+                saveItems(context, items);
+                return;
             }
         }
+    }
 
-        return false;
+    public static Set<String> loadSelectedIds(Context context){
+        Set<String> saveIds = preferences(context).getStringSet(KEY_SELECTED_IDS, Collections.emptySet());
+
+        return new HashSet<>(saveIds);
+    }
+
+    public static boolean isSelected(Context context, String id){
+        return loadSelectedIds(context).contains(id);
+    }
+
+    public static void toggleSelected(Context context, String id){
+        Set<String> selectedIds = loadSelectedIds(context);
+
+        if (selectedIds.contains(id)){
+            selectedIds.remove(id);
+        } else {
+            selectedIds.add(id);
+        }
+
+        preferences(context)
+                .edit()
+                .putStringSet(KEY_SELECTED_IDS, selectedIds)
+                .apply();
+    }
+
+    public static void deleteSelectedItems(Context context){
+        Set<String> selectedIds = loadSelectedIds(context);
+
+        if (selectedIds.isEmpty()){
+            return;
+        }
+
+        List<TodoItem> items = loadItems(context);
+
+        items.removeIf(item -> selectedIds.contains(item.getId()));
+
+        saveItems(context, items);
+
+        preferences(context)
+                .edit()
+                .remove(KEY_SELECTED_IDS)
+                .apply();
     }
 }
