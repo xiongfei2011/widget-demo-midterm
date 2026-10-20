@@ -15,7 +15,7 @@ import androidx.media3.session.MediaSessionService;
 
 import com.example.widgetdemo.R;
 
-/** Quản lý player/session và chuyển trạng thái phát nhạc sang widget. */
+
 public class MusicPlaybackService extends MediaSessionService {
     public static final String ACTION_TOGGLE = "music.widget.action.TOGGLE";
     public static final String ACTION_NEXT = "music.widget.action.NEXT";
@@ -76,7 +76,6 @@ public class MusicPlaybackService extends MediaSessionService {
 
         MusicWidgetProvider.resetWidgets(this);
         super.onDestroy();
-        Log.d("MusicService", "Tắt ứng dụng");
     }
 
     private void initializePlayer() {
@@ -149,7 +148,7 @@ public class MusicPlaybackService extends MediaSessionService {
                 && (state == Player.STATE_READY || state == Player.STATE_BUFFERING);
 
         MusicWidgetProvider.updateAllWidgets(
-                this, artist, title, shouldShowPause,
+                this, title, artist, shouldShowPause,
                 playlist.getCoverResource(player.getCurrentMediaItem())
         );
     }

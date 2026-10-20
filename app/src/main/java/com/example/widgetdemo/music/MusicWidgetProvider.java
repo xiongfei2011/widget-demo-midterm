@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import androidx.annotation.DrawableRes;
@@ -15,7 +14,7 @@ import com.example.widgetdemo.R;
 
 public class MusicWidgetProvider extends AppWidgetProvider {
     // Trạng thái dùng chung cho các widget trong tiến trình hiện tại.
-    private static boolean showPause = false;
+    private static boolean isPlaying = false;
     private static String currentTitle;
     private static String currentArtist;
     private static boolean hasStartedPlayback = false;
@@ -26,15 +25,14 @@ public class MusicWidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds) {
             appWidgetManager.updateAppWidget(appWidgetId, createViews(context));
-            Log.d("Musicdecor", "Khởi tạo widget");
         }
     }
 
-    public static void updateAllWidgets(Context context, String artist, String title,
+    public static void updateAllWidgets(Context context, String title, String artist,
                                         boolean shouldShowPause, @DrawableRes int coverResource) {
         currentTitle = title;
         currentArtist = artist;
-        showPause = shouldShowPause;
+        isPlaying = shouldShowPause;
         currentCoverResource = coverResource;
 
         if (coverResource == 0) {
@@ -82,8 +80,8 @@ public class MusicWidgetProvider extends AppWidgetProvider {
     }
 
     private static void bindControls(Context context, RemoteViews views) {
-        int icon = showPause ? R.drawable.ic_pause_test : R.drawable.ic_play_test;
-        int description = showPause ? R.string.music_pause : R.string.music_play;
+        int icon = isPlaying ? R.drawable.ic_pause_test : R.drawable.ic_play_test;
+        int description = isPlaying ? R.string.music_pause : R.string.music_play;
         views.setImageViewResource(R.id.music_play_pause, icon);
         views.setContentDescription(R.id.music_play_pause, context.getString(description));
 
