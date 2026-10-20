@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@android:color/transparent">
+    android:background="#eaf0e4">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="TP. Hồ Chí Minh"
-            android:textColor="#FFFFFF"
+            android:textColor="#263f31"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -26,7 +26,6 @@
             android:id="@+id/btnRefresh"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
-            android:backgroundTint="@android:color/holo_blue_light"
             android:text="Refresh"
             android:textSize="12sp" />
     </LinearLayout>
@@ -59,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Đang tải dữ liệu..."
-                android:textColor="#ECEFF1"
+                android:textColor="#263f31"
                 android:textSize="14sp" />
 
             <TextView
@@ -68,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="Chưa cập nhật"
-                android:textColor="#90A4AE"
+                android:textColor="#263f31"
                 android:textSize="11sp" />
         </LinearLayout>
 
@@ -77,9 +76,7 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_marginStart="12dp"
-            android:scaleType="fitCenter"
-            android:background="@color/white"
-             />
+            android:src="@android:drawable/ic_menu_compass" />
     </LinearLayout>
 
 </LinearLayout>
