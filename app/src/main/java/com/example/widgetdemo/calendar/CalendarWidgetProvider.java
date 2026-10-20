@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.view.View;
 import android.widget.RemoteViews;
 
 import com.example.widgetdemo.R;
@@ -77,43 +76,45 @@ public class CalendarWidgetProvider extends AppWidgetProvider {
 
         upcomingEvents.sort(Comparator.comparingLong(EventItem::getTimestamp));
 
-        int maxDisplay = Math.min(3, upcomingEvents.size());
-        List<EventItem> topEvents = upcomingEvents.subList(0, maxDisplay);
+        Intent actionIntent = new Intent(context, CalendarWidgetProvider.class);
+        actionIntent.setAction(ACTION_DELETE);
+        actionIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
-        views.removeAllViews(R.id.layout_event_list);
+        PendingIntent actionPendingIntent = PendingIntent.getBroadcast(
+                context,
+                appWidgetId + 50000,
+                actionIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
 
-        if (topEvents.isEmpty()) {
-            views.setViewVisibility(R.id.tv_no_events, View.VISIBLE);
-            views.setViewVisibility(R.id.layout_event_list, View.GONE);
-        } else {
-            views.setViewVisibility(R.id.tv_no_events, View.GONE);
-            views.setViewVisibility(R.id.layout_event_list, View.VISIBLE);
+        views.setPendingIntentTemplate(
+                R.id.list_events,
+                actionPendingIntent
+        );
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+        RemoteViews.RemoteCollectionItems.Builder collection =
+                new RemoteViews.RemoteCollectionItems.Builder()
+                        .setViewTypeCount(1)
+                        .setHasStableIds(false);
 
-            for (int i = 0; i < topEvents.size(); i++) {
-                EventItem event = topEvents.get(i);
-                RemoteViews row = new RemoteViews(context.getPackageName(), R.layout.calendar_event_item);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
 
-                row.setTextViewText(R.id.tv_event_title, event.getTitle());
-                row.setTextViewText(R.id.tv_event_time, sdf.format(new Date(event.getTimestamp())));
+        for (int i = 0; i < upcomingEvents.size(); i++) {
+            EventItem event = upcomingEvents.get(i);
+            RemoteViews row = new RemoteViews(context.getPackageName(), R.layout.calendar_event_item);
 
-                Intent deleteIntent = new Intent(context, CalendarWidgetProvider.class);
-                deleteIntent.setAction(ACTION_DELETE);
-                deleteIntent.putExtra(EXTRA_EVENT_ID, event.getId());
-                deleteIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-                deleteIntent.setData(Uri.parse("calendar://widget/delete/" + appWidgetId + "/" + event.getId()));
-                PendingIntent pendingDeleteIntent = PendingIntent.getBroadcast(
-                        context,
-                        (appWidgetId * 100) + i,
-                        deleteIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-                );
-                row.setOnClickPendingIntent(R.id.btn_delete_event, pendingDeleteIntent);
+            row.setTextViewText(R.id.tv_event_title, event.getTitle());
+            row.setTextViewText(R.id.tv_event_time, sdf.format(new Date(event.getTimestamp())));
 
-                views.addView(R.id.layout_event_list, row);
-            }
+            Intent fillInIntent = new Intent();
+            fillInIntent.putExtra(EXTRA_EVENT_ID, event.getId());
+            row.setOnClickFillInIntent(R.id.btn_delete_event, fillInIntent);
+
+            collection.addItem(i, row);
         }
+
+        views.setRemoteAdapter(R.id.list_events, collection.build());
+        views.setEmptyView(R.id.list_events, R.id.tv_no_events);
 
         return views;
     }

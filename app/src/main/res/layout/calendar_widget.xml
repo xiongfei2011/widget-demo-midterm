@@ -37,21 +37,28 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_no_events"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="Không có sự kiện sắp tới"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
-        android:visibility="gone" />
+        android:layout_weight="1">
 
-    <LinearLayout
-        android:id="@+id/layout_event_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" />
+        <ListView
+            android:id="@+id/list_events"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="4dp"
+            android:scrollbars="none" />
+
+        <TextView
+            android:id="@+id/tv_no_events"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Không có sự kiện sắp tới"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:visibility="gone" />
+    </FrameLayout>
 
 </LinearLayout>
