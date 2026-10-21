@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121212"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Thêm sự kiện mới"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- Tiêu đề sự kiện -->
+    <EditText
+        android:id="@+id/edt_event_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:hint="Nhập tiêu đề sự kiện"
+        android:inputType="text|textCapSentences"
+        android:imeOptions="actionDone"
+        android:textColor="@android:color/white"
+        android:textColorHint="#757575"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:text="Chọn ngày cụ thể:"
+        android:textColor="#B0BEC5"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/edt_date_select"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:clickable="true"
+        android:focusable="false"
+        android:hint="Chọn ngày (dd/MM/yyyy)"
+        android:textColor="@android:color/white"
+        android:textColorHint="#757575"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:text="Chọn giờ (HH:mm):"
+        android:textColor="#B0BEC5"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/edt_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:hint="Ví dụ: 14:30"
+        android:inputType="time"
+        android:textColor="@android:color/white"
+        android:textColorHint="#757575"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn_save_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#2196F3"
+        android:text="Lưu sự kiện"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+</LinearLayout>
