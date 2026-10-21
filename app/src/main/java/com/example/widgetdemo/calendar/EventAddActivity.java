@@ -94,7 +94,7 @@ public class EventAddActivity extends AppCompatActivity {
 
             selectedCalendar.set(Calendar.HOUR_OF_DAY, hour);
             selectedCalendar.set(Calendar.MINUTE, minute);
-            selectedCalendar.set(Calendar.SECOND, 0);`
+            selectedCalendar.set(Calendar.SECOND, 0);
             selectedCalendar.set(Calendar.MILLISECOND, 0);
 
             long timestamp = selectedCalendar.getTimeInMillis();

@@ -49,8 +49,8 @@ public class MusicWidgetProvider extends AppWidgetProvider {
     public static void resetWidgets(Context context) {
         updateAllWidgets(
                 context,
-                context.getString(R.string.music_name_artist),
                 context.getString(R.string.music_default_title),
+                context.getString(R.string.music_name_artist),
                 false,
                 0
         );
