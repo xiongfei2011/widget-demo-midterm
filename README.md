@@ -8,11 +8,11 @@ A Mobile Application Development midterm project by a team of three, built with 
 
 | Widget | Planned feature | Status |
 | --- | --- | --- |
-| Clock | Display a digital or analog clock | implemented |
-| Weather | Update weather data from an API | Not implemented |
-| To-Do List | Add and remove tasks | implemented |
-| Music Player | Play and pause music | implemented |
-| Event Calendar | Display upcoming events | Not implemented |
+| Clock | Display a digital or analog clock | Implemented |
+| Weather | Update weather data from an API | Implemented |
+| To-Do List | Add and remove tasks | Implemented |
+| Music Player | Play and pause music | Implemented |
+| Event Calendar | Display upcoming events | Implemented |
 
 The project currently contains a starter activity displaying "Hello World!". No widgets are registered yet. Build and device testing have not been verified during repository setup.
 
@@ -65,9 +65,9 @@ Commit only relevant files, push the feature branch, and open a **PR into dev**.
 
 | Thành viên | Họ tên / MSSV / GitHub      | Phân công |
 | --- |-----------------------------| --- |
-| 1 | Vũ Hùng Phi - 524K0008      | Cần thống nhất |
-| 2 | Trần Hoàng Khải - 523V00 03 | Cần thống nhất |
-| 3 | Đinh Ngọc Hoa - 524K0031    | Cần thống nhất |
+| 1 | Vũ Hùng Phi - 524K0008      | Music Player Widget, To-do List Widget |
+| 2 | Trần Hoàng Khải - 523V00 03 | Weather Widget, Event Calender Widget |
+| 3 | Đinh Ngọc Hoa - 524K0031    | Clock Widget |
 
 ## Submission and Rubric
 
@@ -76,12 +76,8 @@ Commit only relevant files, push the feature branch, and open a **PR into dev**.
 | Deliverable | Requirements | File or link |
 | --- | --- | --- |
 | Report | Explain App Widgets and how the demos were implemented | To be added |
-| Slides | Present the research findings | To be added |
-| Mind map | Summarize the knowledge gained | To be added |
 | Source code | Original demo implementations the team can explain | This repository; demos pending |
 | Demo videos | Clearly show the demos; each video must be at most 2 minutes | To be added |
-| References and resources | Credit documentation, APIs, images, and audio used | To be added |
 
-Grading: **presentation and formatting 2 points**, **content 2 points**, and **demo 6 points** (product quality 4, video 2).
 
 
