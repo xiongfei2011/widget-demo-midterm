@@ -1,0 +1,8 @@
+<resources>
+    <string name="clock_name">Clock Widget</string>
+    <string name="clock_widget_name">Clock</string>
+    <string name="select_time_zone">Select Time Zone</string>
+    <string name="vietnam_hanoi_utc_7">Vietnam (Hanoi - UTC+7)</string>
+    <string name="japan_tokyo_utc_9">Japan (Tokyo - UTC+9)</string>
+    <string name="usa_new_york_utc_4">USA (New York - UTC-4)</string>
+</resources>

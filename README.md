@@ -8,10 +8,10 @@ A Mobile Application Development midterm project by a team of three, built with 
 
 | Widget | Planned feature | Status |
 | --- | --- | --- |
-| Clock | Display a digital or analog clock | Not implemented |
+| Clock | Display a digital or analog clock | implemented |
 | Weather | Update weather data from an API | Not implemented |
-| To-Do List | Add and remove tasks | Not implemented |
-| Music Player | Play and pause music | Not implemented |
+| To-Do List | Add and remove tasks | implemented |
+| Music Player | Play and pause music | implemented |
 | Event Calendar | Display upcoming events | Not implemented |
 
 The project currently contains a starter activity displaying "Hello World!". No widgets are registered yet. Build and device testing have not been verified during repository setup.
