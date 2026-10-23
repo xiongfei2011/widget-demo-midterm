@@ -76,7 +76,7 @@ Commit only relevant files, push the feature branch, and open a **PR into dev**.
 | Deliverable | Requirements | File or link |
 | --- | --- | --- |
 | Report | Explain App Widgets and how the demos were implemented | To be added |
-| Source code | Original demo implementations the team can explain | This repository; demos pending |
+| Source code | Original demo implementations the team can explain | [This repository; demos pending](https://github.com/xiongfei2011/widget-demo-midterm) |
 | Demo videos | Clearly show the demos; each video must be at most 2 minutes | [To be added](https://drive.google.com/drive/folders/1k2P7rqR7p-Il7xk1BJV4kdpk-zrfb-nI) |
 
 
